@@ -28,6 +28,8 @@ void switchScene(char scene_id);
 
 #include "scenes/mainmenu.h"
 #include "scenes/credits.h"
+#include "scenes/bathroom.h"
+#include "scenes/backroom.h"
 
 void switchScene(char scene_id) {
   scene = scene_id;
@@ -40,10 +42,10 @@ void switchScene(char scene_id) {
       handleSceneSwitchCredits();
       break;
     case SCENE_BATHROOM:
-      handleSceneSwitchMainMenu();
+      handleSceneSwitchBathroom();
       break;
     case SCENE_BACKROOM:
-      handleSceneSwitchMainMenu();
+      handleSceneSwitchBackroom();
       break;
     case SCENE_GAME:
       handleSceneSwitchMainMenu();
@@ -63,10 +65,10 @@ void click(char button) {
       handleInputCredits(button);
       break;
     case SCENE_BATHROOM:
-      handleInputMainMenu(button);
+      handleInputBathroom(button);
       break;
     case SCENE_BACKROOM:
-      handleInputMainMenu(button);
+      handleInputBackroom(button);
       break;
     case SCENE_GAME:
       handleInputMainMenu(button);

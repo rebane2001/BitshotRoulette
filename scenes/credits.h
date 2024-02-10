@@ -16,8 +16,8 @@ void drawCredits() {
   tft.drawString(F("ESP32 port by"), 8, BASE_HEIGHT + LINE_HEIGHT*6);
   tft.drawString(F("Lyra Rebane"), 8, BASE_HEIGHT + LINE_HEIGHT*7);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString(F("Press any key"), TFT_WC, TFT_HEIGHT - 30 - LINE_HEIGHT);
-  tft.drawString(F("to next"), TFT_WC, TFT_HEIGHT - 30);
+  tft.drawString(F("Press any key"), TFT_WC, TFT_HEIGHT - 25 - LINE_HEIGHT);
+  tft.drawString(F("to next"), TFT_WC, TFT_HEIGHT - 25);
 }
 
 void handleSceneSwitchCredits() {
