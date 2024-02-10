@@ -12,6 +12,8 @@ TFT_eSPI tft = TFT_eSPI(TFT_WIDTH, TFT_HEIGHT);
 Button2 btn_left;
 Button2 btn_right;
 
+bool btn_left_long = false;
+
 #include "assets.h"
 #include "drawing.h"
 
@@ -19,8 +21,8 @@ Button2 btn_right;
 #define  SCENE_CREDITS 1
 #define  SCENE_BATHROOM 2
 #define  SCENE_BACKROOM 3
-#define  SCENE_GAME 4
-#define  SCENE_WAIVER 5
+#define  SCENE_WAIVER 4
+#define  SCENE_GAME 5
 int scene = SCENE_MAIN_MENU;
 int scene_selection = 0;
 
@@ -30,6 +32,8 @@ void switchScene(char scene_id);
 #include "scenes/credits.h"
 #include "scenes/bathroom.h"
 #include "scenes/backroom.h"
+#include "scenes/waiver.h"
+#include "scenes/game.h"
 
 void switchScene(char scene_id) {
   scene = scene_id;
@@ -47,11 +51,11 @@ void switchScene(char scene_id) {
     case SCENE_BACKROOM:
       handleSceneSwitchBackroom();
       break;
-    case SCENE_GAME:
-      handleSceneSwitchMainMenu();
-      break;
     case SCENE_WAIVER:
-      handleSceneSwitchMainMenu();
+      handleSceneSwitchWaiver();
+      break;
+    case SCENE_GAME:
+      handleSceneSwitchGame();
       break;
   }
 }
@@ -70,11 +74,11 @@ void click(char button) {
     case SCENE_BACKROOM:
       handleInputBackroom(button);
       break;
-    case SCENE_GAME:
-      handleInputMainMenu(button);
-      break;
     case SCENE_WAIVER:
-      handleInputMainMenu(button);
+      handleInputWaiver(button);
+      break;
+    case SCENE_GAME:
+      handleInputGame(button);
       break;
   }
 }
@@ -84,6 +88,7 @@ void setupButtons() {
   btn_right.begin(BUTTON_UP);
   btn_left.setTapHandler(click_left);
   btn_right.setTapHandler(click_right);
+  btn_left.setLongClickDetectedHandler(hold_left);
 }
 
 void setupTft() {
@@ -107,8 +112,13 @@ void setup() {
 }
 
 void click_left(Button2 &b) {
+  btn_left_long = false;
   scene_selection++;
   click(0);
+}
+
+void hold_left(Button2 &b) {
+  btn_left_long = true;
 }
 
 void click_right(Button2 &b) {
@@ -122,6 +132,9 @@ void buttonLoop() {
 
 void loop(void) {
   buttonLoop();
+  if (btn_left_long && scene == SCENE_WAIVER) {
+    waiverHold();
+  }
   // drawPngOutline(Iestrogen);
   // drawPng(Iestrogen);
   }

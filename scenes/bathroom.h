@@ -22,7 +22,7 @@ void handleSceneSwitchBathroom() {
 void handleInputBathroom(char button) {
   if (isHoldingEstrogen) {
     isHoldingEstrogen = false;
-    scene_selection = 0;
+    scene_selection = 1;
     drawBathroom();
     return;
   }
