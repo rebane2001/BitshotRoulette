@@ -13,48 +13,11 @@ TFT_eSPI tft = TFT_eSPI(TFT_WIDTH, TFT_HEIGHT);
 Button2 btn_left;
 Button2 btn_right;
 
-#include <PNGdec.h>
 #include "assets.h"
-PNG png;
-
-#define MAX_IMAGE_WIDTH 135
-int16_t xpos = 0;
-int16_t ypos = 0;
+#include "drawing.h"
 
 int textPos = 120;
 
-// https://github.com/Bodmer/TFT_eSPI/blob/master/examples/PNG%20Images/Flash_transparent_PNG/png_support.ino
-void pngDrawHelper(PNGDRAW *pDraw) {
-  uint16_t lineBuffer[MAX_IMAGE_WIDTH];          // Line buffer for rendering
-  uint8_t  maskBuffer[1 + MAX_IMAGE_WIDTH / 8];  // Mask buffer
-
-  png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
-
-  if (png.getAlphaMask(pDraw, maskBuffer, 255)) {
-    // Note: pushMaskedImage is for pushing to the TFT and will not work pushing into a sprite
-    tft.pushMaskedImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
-  }
-}
-
-void drawPng(const void *image, uint64_t size, int x, int y) {
-  xpos = x;
-  ypos = y;
-  uint16_t pngw = 0, pngh = 0;
-  int16_t rc = png.openFLASH((uint8_t *)image, size, pngDrawHelper);
-
-  if (rc == PNG_SUCCESS) {
-    pngw = png.getWidth();
-    pngh = png.getHeight();
-
-    tft.startWrite();
-    rc = png.decode(NULL, 0);
-    tft.endWrite();
-  }
-}
-
-void drawPng(const void *image, uint64_t size) {
-  drawPng(image, size, 0, 0);
-}
 
 void setupButtons() {
   btn_left.begin(BUTTON_DOWN);
@@ -122,51 +85,8 @@ void loop(void) {
   tft.drawString("T E S T", 67, textPos);
 
   drawPng(Ibathroom, 0, 0);
-  drawPng(Id_beer, 0, 0);
-  drawPng(Id_cuff, 0, 0);
-  drawPng(Id_gun, 0, 0);
-  drawPng(Id_gun_rack, 0, 0);
-  drawPng(Id_gun_shoot_d, 0, 0);
-  drawPng(Id_gun_shoot_p, 0, 0);
-  drawPng(Id_knife, 0, 0);
-  drawPng(Id_mag_1, 0, 0);
-  drawPng(Id_mag_2, 0, 0);
-  drawPng(Id_smoke_1, 0, 0);
-  drawPng(Id_smoke_2, 0, 0);
-  drawPng(Idealer_hands, 0, 0);
-  drawPng(Idealer_hands_cuff, 0, 0);
-  drawPng(Idealer_head, 0, 0);
-  drawPng(Idealer_head_crushed, 0, 0);
+  drawPngOutline(Iestrogen, 0, 0);
   drawPng(Iestrogen, 0, 0);
-  drawPng(Iguy_1, 0, 0);
-  drawPng(Iguy_2, 0, 0);
-  drawPng(Ikeypad, 0, 0);
-  drawPng(Iliability, 0, 0);
-  drawPng(Iliability_god, 0, 0);
-  drawPng(Ip_beer_1, 0, 0);
-  drawPng(Ip_beer_2, 0, 0);
-  drawPng(Ip_cig_1, 0, 0);
-  drawPng(Ip_cig_2, 0, 0);
-  drawPng(Ip_cig_3, 0, 0);
-  drawPng(Ip_cuff_1, 0, 0);
-  drawPng(Ip_cuff_2, 0, 0);
-  drawPng(Ip_gun_inspect, 0, 0);
-  drawPng(Ip_gun_pickup, 0, 0);
-  drawPng(Ip_gun_rack_1, 0, 0);
-  drawPng(Ip_gun_rack_2, 0, 0);
-  drawPng(Ip_gun_shoot_d, 0, 0);
-  drawPng(Ip_gun_shoot_p, 0, 0);
-  drawPng(Ip_gun_table, 0, 0);
-  drawPng(Ip_knife_1, 0, 0);
-  drawPng(Ip_knife_2, 0, 0);
-  drawPng(Ip_knife_3, 0, 0);
-  drawPng(Ip_knife_4, 0, 0);
-  drawPng(Ip_mag_1, 0, 0);
-  drawPng(Ip_mag_2, 0, 0);
-  drawPng(Ip_mag_3, 0, 0);
-  drawPng(Ip_sig_4, 0, 0);
-  drawPng(Ishow_shells, 0, 0);
-  drawPng(Ishow_shells_trans, 0, 0);
   //delay(200);
 
   // pict2
