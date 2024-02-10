@@ -1,7 +1,6 @@
 #include <TFT_eSPI.h>
 #include <SPI.h>
 #include "Button2.h"
-#include "image.c"
 
 #define TFT_WIDTH       135
 #define TFT_HEIGHT      240
@@ -16,8 +15,67 @@ Button2 btn_right;
 #include "assets.h"
 #include "drawing.h"
 
-int textPos = 120;
+#define  SCENE_MAIN_MENU 0
+#define  SCENE_CREDITS 1
+#define  SCENE_BATHROOM 2
+#define  SCENE_BACKROOM 3
+#define  SCENE_GAME 4
+#define  SCENE_WAIVER 5
+int scene = SCENE_MAIN_MENU;
+int scene_selection = 0;
 
+void switchScene(char scene_id);
+
+#include "scenes/mainmenu.h"
+#include "scenes/credits.h"
+
+void switchScene(char scene_id) {
+  scene = scene_id;
+  scene_selection = 0;
+  switch (scene) {
+    case SCENE_MAIN_MENU:
+      handleSceneSwitchMainMenu();
+      break;
+    case SCENE_CREDITS:
+      handleSceneSwitchCredits();
+      break;
+    case SCENE_BATHROOM:
+      handleSceneSwitchMainMenu();
+      break;
+    case SCENE_BACKROOM:
+      handleSceneSwitchMainMenu();
+      break;
+    case SCENE_GAME:
+      handleSceneSwitchMainMenu();
+      break;
+    case SCENE_WAIVER:
+      handleSceneSwitchMainMenu();
+      break;
+  }
+}
+
+void click(char button) {
+  switch (scene) {
+    case SCENE_MAIN_MENU:
+      handleInputMainMenu(button);
+      break;
+    case SCENE_CREDITS:
+      handleInputCredits(button);
+      break;
+    case SCENE_BATHROOM:
+      handleInputMainMenu(button);
+      break;
+    case SCENE_BACKROOM:
+      handleInputMainMenu(button);
+      break;
+    case SCENE_GAME:
+      handleInputMainMenu(button);
+      break;
+    case SCENE_WAIVER:
+      handleInputMainMenu(button);
+      break;
+  }
+}
 
 void setupButtons() {
   btn_left.begin(BUTTON_DOWN);
@@ -43,16 +101,16 @@ void setup() {
   Serial.print(F("Bitshot Roulette"));
   setupTft();
   setupButtons();
+  drawMainMenu();
 }
 
 void click_left(Button2 &b) {
-  tft.fillScreen(0x00E0);
-  textPos -= 20;
+  scene_selection++;
+  click(0);
 }
 
 void click_right(Button2 &b) {
-  tft.fillScreen(0xE000);
-  textPos += 20;
+  click(1);
 }
 
 void buttonLoop() {
@@ -62,35 +120,6 @@ void buttonLoop() {
 
 void loop(void) {
   buttonLoop();
-  //tft.fillScreen(0x0000);
-
-  // pict1
-  // tft.setRotation(1);
-  //tft.fillScreen(0xFF80);
-  tft.pushImage(0, 0, 70, 70, (uint16_t *)lyra);
-  tft.setTextColor(0xFFFF, 0x0000);
-  tft.setTextSize(2);
-  tft.setTextDatum(MC_DATUM);
-  tft.drawString("BITSHOT", 67, 20);
-  tft.drawString("ROULETTE", 67, 20 + 18);
-  tft.setTextSize(1);
-  tft.drawString("AN ESP32 GAME", 67, 20 + 18*2);
-  tft.drawString("BY LYRA REBANE", TFT_WIDTH/2, 20 + 18*2 + 9);
-  
-  tft.drawString("START", 67, 79 + 10);
-  tft.drawString("CREDITS", 67, 79 + 19);
-  tft.drawString("EXIT", 67, 79 + 28);
-
-  tft.setTextColor(0xBEEF, 0x0000);
-  tft.drawString("T E S T", 67, textPos);
-
-  drawPng(Ibathroom, 0, 0);
-  drawPngOutline(Iestrogen, 0, 0);
-  drawPng(Iestrogen, 0, 0);
-  //delay(200);
-
-  // pict2
-  //tft.fillScreen(0x00FF);
-  //tft.drawRGBBitmap(0, 0, lyra,  35, 140);
-  //delay(200);
+  // drawPngOutline(Iestrogen);
+  // drawPng(Iestrogen);
   }

@@ -22,8 +22,9 @@ void pngDrawHelper(PNGDRAW *pDraw) {
       tft.drawBitmap(xpos + 1, ypos + pDraw->y, maskBuffer, pDraw->iWidth, 1, outlineC);
       tft.drawBitmap(xpos, ypos + pDraw->y - 1, maskBuffer, pDraw->iWidth, 1, outlineC);
       tft.drawBitmap(xpos, ypos + pDraw->y + 1, maskBuffer, pDraw->iWidth, 1, outlineC);
+    } else {
+      tft.pushMaskedImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
     }
-    tft.pushMaskedImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
   }
 }
 
