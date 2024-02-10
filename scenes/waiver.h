@@ -55,7 +55,7 @@ void drawKeypad() {
 }
 
 void drawWaiver() {
-  drawPng(Iguy_2);
+  drawPng(Iguy_1);
   drawPng(Iliability);
   drawPng(Icheckerboard);
   drawKeypad();
