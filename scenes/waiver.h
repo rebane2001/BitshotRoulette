@@ -82,7 +82,7 @@ void handleInputWaiver(char button) {
       if (player_name.length() == 0) return;
       if (player_name.equals("GOD")) return;
       if (player_name.equals("DEALER")) return;
-      drawPng(Iguy_2);
+      drawPng(Iguy_1);
       drawPng(Iliability);
       tft.setTextColor(0x0000, 0x86BB);
       tft.setTextSize(2);
