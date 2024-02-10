@@ -75,11 +75,11 @@ void handleInputWaiver(char button) {
   }
   if (button == 1) {
     if (scene_selection == 2) {
-      if (player_name.length() < 0) return;
+      if (player_name.length() == 0) return;
       player_name.remove(player_name.length() - 1);
       drawKeypad();
     } else if (scene_selection == 6) {
-      if (player_name.length() < 0) return;
+      if (player_name.length() == 0) return;
       if (player_name.equals("GOD")) return;
       if (player_name.equals("DEALER")) return;
       drawPng(Iguy_2);
