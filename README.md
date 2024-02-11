@@ -6,7 +6,7 @@ A fanmade demake of Buckshot Roulette for the ESP32 (TTGO T-Display). Please che
 
 Check out a video demo **[here](https://youtu.be/-t5OGMdE8Ls)**.
 
-![Smoking guy](assets_png/guy_1.png?raw=true "Smoking guy") ![Keypad](assets_png/keypad.png?raw=true "Keypad") ![Shell spot on table](assets_png/show_shells.png?raw=true "Shell spot on table")
+[![Smoking guy](assets_png/guy_1.png?raw=true "Smoking guy")![Shell spot on table](assets_png/show_shells.png?raw=true "Shell spot on table")![Keypad](assets_png/keypad.png?raw=true "Keypad")](https://youtu.be/-t5OGMdE8Ls)
 
 ## Features
 
