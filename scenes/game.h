@@ -137,9 +137,9 @@ void drawShowShells() {
   delay(1000);
   char liveShellsRemaining = liveShellCount;
   char blankShellsRemaining = blankShellCount;
-  short showShellX = i > 3 ? 1 : 0;
-  short showShellY = 188 - i*22; 
   for (char i = 0; i < 8; i++) {
+    short showShellX = i > 3 ? 1 : 0;
+    short showShellY = 188 - i*22; 
     if (i > shellCount - 1) {
       drawPng(Ishow_none, showShellX, showShellY);
     } else if (liveShellsRemaining && (!blankShellsRemaining || random(2) == 1)) {
