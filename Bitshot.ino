@@ -23,6 +23,8 @@ bool btn_left_long = false;
 #define  SCENE_BACKROOM 3
 #define  SCENE_WAIVER 4
 #define  SCENE_GAME 5
+#define  SCENE_DOUBLE 6
+#define  SCENE_DEAD 7
 int scene = SCENE_MAIN_MENU;
 int scene_selection = 0;
 
@@ -64,6 +66,12 @@ void switchScene(char scene_id) {
     case SCENE_GAME:
       handleSceneSwitchGame();
       break;
+    case SCENE_DOUBLE:
+      handleSceneSwitchDouble();
+      break;
+    case SCENE_DEAD:
+      handleSceneSwitchDead();
+      break;
   }
 }
 
@@ -86,6 +94,12 @@ void click(char button) {
       break;
     case SCENE_GAME:
       handleInputGame(button);
+      break;
+    case SCENE_DOUBLE:
+      handleInputDouble(button);
+      break;
+    case SCENE_DEAD:
+      handleInputDead(button);
       break;
   }
 }

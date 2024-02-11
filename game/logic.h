@@ -33,6 +33,8 @@ char who_cuffed = E_NONE;
 
 bool handsawActive = false;
 
+long long game_score = 0;
+
 char shootGun(char whoShot, char whoGotShot) {
   char shell = popShell();
   if (shell == SHELL_LIVE)
@@ -63,6 +65,13 @@ char getNextTurn(char shell) {
     return STATE_DEALER_TURN;
   }
   return (game_state == STATE_PLAYER_SHOT_P || game_state == STATE_PLAYER_SHOT_D) ? STATE_DEALER_TURN : STATE_PLAYER_TURN;
+}
+
+void resetItems() {
+  for (char i = 0; i < 8; i++) {
+    player_items[i] = ITEM_NONE;
+    dealer_items[i] = ITEM_NONE;
+  }
 }
 
 void giveItems() {

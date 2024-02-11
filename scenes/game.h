@@ -310,6 +310,7 @@ void startRound() {
 
 void handleSceneSwitchGame() {
   tft.fillScreen(0x0000);
+  resetHealth();
   startRound();
 }
 
@@ -387,7 +388,10 @@ void shootCallback(char shell, char whoGotShot) {
 
   char dead = whoIsDead();
   if (dead != E_NONE) {
-    tft.fillScreen(dead == E_PLAYER ? 0xE000 : 0x0EE0);
+    tft.fillScreen(0x0000);
+    delay(1000);
+    switchScene(dead == E_PLAYER ? SCENE_DEAD : SCENE_DOUBLE);
+    return;
   } else if (nextRound()) {
     tft.fillScreen(0x0000);
     game_state = STATE_PLAYER_TURN;

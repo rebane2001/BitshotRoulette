@@ -19,3 +19,8 @@ void changeHealth(char entity, signed char amount) {
     dealerHealth = health;
   }
 }
+
+void resetHealth() {
+  playerHealth = HEALTH_START;
+  dealerHealth = HEALTH_START;
+}
