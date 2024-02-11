@@ -31,13 +31,23 @@ char dealer_items[8] = {0, 0, 0, 0, 0, 3, 0};
 
 char who_cuffed = E_NONE;
 
+bool handsawActive = false;
+
 char shootGun(char whoShot, char whoGotShot) {
   char shell = popShell();
   if (shell == SHELL_LIVE) {
     if (whoGotShot == E_PLAYER) {
       playerHealth--;
+      if (handsawActive && playerHealth) {
+        playerHealth--;
+        handsawActive = false;
+      }
     } else {
       dealerHealth--;
+      if (handsawActive && dealerHealth) {
+        dealerHealth--;
+        handsawActive = false;
+      }
     }
   }
   return shell;

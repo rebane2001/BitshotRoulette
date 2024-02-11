@@ -16,7 +16,7 @@ void generateShells() {
   for (char i = 0; i < 8; i++) {
     if (i > shellCount - 1) {
       shells[i] = SHELL_NONE;
-    } else if (liveShellsRemaining && (!blankShellsRemaining || random(2) == 1)) {
+    } else if (liveShellsRemaining && (!blankShellsRemaining || random(2))) {
       shells[i] = SHELL_LIVE;
       liveShellsRemaining--;
     } else {
@@ -24,6 +24,14 @@ void generateShells() {
       blankShellsRemaining--;
     }
   }
+}
+
+char peekShell() {
+  if (shellCount == 0) {
+    Serial.println("Logic Error: Out of shells but trying to pop one"); 
+    return 0;
+  }
+  return shells[shellCount - 1];
 }
 
 char popShell() {

@@ -168,7 +168,7 @@ void drawShowShells() {
     short showShellY = 188 - i*22; 
     if (i > shellCount - 1) {
       drawPng(Ishow_none, showShellX, showShellY);
-    } else if (liveShellsRemaining && (!blankShellsRemaining || random(2) == 1)) {
+    } else if (liveShellsRemaining && (!blankShellsRemaining || random(2))) {
       drawPng(Ishow_live, showShellX, showShellY);
       liveShellsRemaining--;
     } else {
@@ -208,13 +208,13 @@ void shootCallback(char shell, char whoGotShot) {
   if (shell == SHELL_LIVE) {
     if (whoGotShot == E_PLAYER) {
       for (char i = 0; i < 32; i++) {
-        tft.fillScreen(vic_colors[random(0,16)]);
+        tft.fillScreen(vic_colors[random(16)]);
         delay(16);
       }
     } else {
       tft.fillScreen(VIC_BLACK);
       for (char i = 0; i < 8; i++) {
-        drawDealer(vic_colors[random(0,16)], true);
+        drawDealer(vic_colors[random(16)], true);
       }
     }
   } else {
@@ -226,6 +226,7 @@ void shootCallback(char shell, char whoGotShot) {
     tft.fillScreen(dead == E_PLAYER ? 0xE000 : 0x0EE0);
   } else if (nextRound()) {
     tft.fillScreen(0x0000);
+    game_state = STATE_PLAYER_TURN;
     drawGame();
     delay(300);
     startRound();
@@ -233,6 +234,7 @@ void shootCallback(char shell, char whoGotShot) {
     game_state = getNextTurn(shell);
     tft.fillScreen(0x0000);
     drawGame();
+    resetDealerTurn()
     handleDealer();
   }
   // TODO: do this part
