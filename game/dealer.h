@@ -3,7 +3,8 @@
 #define DEALER_ACTION_SHOOT_D  2
 #define DEALER_ACTION_USE_ITEM 3
 
-char knowShell = SHELL_NONE;
+// Defined in define.h
+// char knowShell = SHELL_NONE;
 char dealerTarget = E_NONE;
 char desiredItemSlot = 0;
 
@@ -13,7 +14,6 @@ char desiredItemSlot = 0;
 void resetDealerTurn() {
   knowShell = SHELL_NONE;
   dealerTarget = E_NONE;
-  desiredItem = ITEM_NONE;
   desiredItemSlot = 0;
 }
 

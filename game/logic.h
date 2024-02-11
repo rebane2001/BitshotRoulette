@@ -3,10 +3,10 @@
 #define STATE_PLAYER_SHOOT  2
 #define STATE_PLAYER_SHOT_D 3
 #define STATE_PLAYER_SHOT_P 4
-#define STATE_PLAYER_ITEM   6
-#define STATE_DEALER_TURN   7
-#define STATE_DEALER_SHOOT  8
-#define STATE_DEALER_SHOT_D 9
+#define STATE_PLAYER_ITEM   5
+#define STATE_DEALER_TURN   6
+#define STATE_DEALER_SHOOT  7
+#define STATE_DEALER_SHOT_D 8
 #define STATE_DEALER_SHOT_P 9
 #define STATE_DEALER_ITEM   10
 int game_state = STATE_SHELL_CHECK;
@@ -63,7 +63,7 @@ char getNextTurn(char shell) {
   return (game_state == STATE_PLAYER_SHOT_P || game_state == STATE_PLAYER_SHOT_D) ? STATE_DEALER_TURN : STATE_PLAYER_TURN;
 }
 
-void useItem(char entity, char itemIndex) {
+char useItem(char entity, char itemIndex) {
   // TODO: check if item use is allowed
   char used_item = (entity == E_PLAYER ? player_items : dealer_items)[itemIndex];
   switch (used_item) {

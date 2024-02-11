@@ -235,7 +235,7 @@ void shootCallback(char shell, char whoGotShot) {
     game_state = getNextTurn(shell);
     tft.fillScreen(0x0000);
     drawGame();
-    resetDealerTurn()
+    resetDealerTurn();
     handleDealer();
   }
   // TODO: do this part
