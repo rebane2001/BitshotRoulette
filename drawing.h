@@ -4,7 +4,7 @@ PNG png;
 #define MAX_IMAGE_WIDTH 135
 int16_t xpos = 0;
 int16_t ypos = 0;
-uint16_t outlineC = 0;
+uint16_t outlineC = 1;
 
 #define HIGHLIGHT_COLOR 0xFFE0
 
@@ -17,7 +17,7 @@ void pngDrawHelper(PNGDRAW *pDraw) {
 
   if (png.getAlphaMask(pDraw, maskBuffer, 255)) {
     // Note: pushMaskedImage is for pushing to the TFT and will not work pushing into a sprite
-    if (outlineC != 0) {
+    if (outlineC != 1) {
       tft.drawBitmap(xpos - 1, ypos + pDraw->y, maskBuffer, pDraw->iWidth, 1, outlineC);
       tft.drawBitmap(xpos + 1, ypos + pDraw->y, maskBuffer, pDraw->iWidth, 1, outlineC);
       tft.drawBitmap(xpos, ypos + pDraw->y - 1, maskBuffer, pDraw->iWidth, 1, outlineC);
@@ -41,13 +41,16 @@ void drawPng(const void *image, uint64_t size, int x, int y) {
     tft.startWrite();
     rc = png.decode(NULL, 0);
     tft.endWrite();
+    png.close();
+  } else {
+    Serial.println("ERROR DECODING IMAGE"); 
   }
 }
 
 void drawPngOutline(const void *image, uint64_t size, int x, int y, uint16_t outline) {
   outlineC = outline;
   drawPng(image, size, x, y);
-  outlineC = 0;
+  outlineC = 1;
 }
 
 void drawPngOutline(const void *image, uint64_t size, int x, int y) {

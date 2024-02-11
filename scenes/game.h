@@ -90,10 +90,20 @@ void drawDealer() {
   }
 }
 
+void drawScores() {
+  tft.setTextColor(0x07e0, 0x0000);
+  tft.setTextSize(1);
+  tft.setTextDatum(TL_DATUM);
+  tft.drawString(F("DEALER"), 1, 1);
+  tft.setTextDatum(TR_DATUM);
+  tft.drawString(player_name, TFT_WIDTH - 1, 1);
+}
+
 void drawGame() {
   drawTable();
   drawTableItems();
   drawDealer();
+  drawScores();
 }
 
 void handleSceneSwitchGame() {
