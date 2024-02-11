@@ -28,10 +28,18 @@ void generateShells() {
 
 char peekShell() {
   if (shellCount == 0) {
-    Serial.println("Logic Error: Out of shells but trying to pop one"); 
+    Serial.println("Logic Error: Out of shells but trying to peek one"); 
     return 0;
   }
   return shells[shellCount - 1];
+}
+
+char prevShell() {
+  if (shellCount > 7) {
+    Serial.println("Logic Error: There is no previous shell to peek"); 
+    return 0;
+  }
+  return shells[shellCount];
 }
 
 char popShell() {

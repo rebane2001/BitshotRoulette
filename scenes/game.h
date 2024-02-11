@@ -26,6 +26,77 @@ void drawOverlay() {
       drawPngOutline(Ip_gun_shoot_p, 0x0000);
       drawPng(Ip_gun_shoot_p);
       break;
+    case STATE_PLAYER_ITEM:
+      switch (last_item) {
+        case ITEM_CUFFS:
+          drawPngOutline(Ip_cuff_1, 0x0000);
+          drawPng(Ip_cuff_1);
+          break;
+        case ITEM_MAG:
+          if (item_frame == 0) {
+            drawPngOutline(Ip_mag_1, 0x0000);
+            drawPng(Ip_mag_1);
+          } else if (item_frame == 1) {
+            drawPngOutline(Ip_mag_2, 0x0000);
+            drawPng(Ip_mag_2);
+          } else if (item_frame >= 2) {
+            drawPngOutline(Ip_mag_3, 0x0000);
+            drawPng(Ip_mag_3);
+            if (item_frame == 3) {
+              drawPngOutline(Ip_gun_rack_1, 0x0000);
+              drawPng(Ip_gun_rack_1);
+            } else if (item_frame == 4) {
+              if (peekShell() == SHELL_LIVE) {
+                drawPngOutline(Ip_gun_rack_live, 0x0000);
+                drawPng(Ip_gun_rack_live);
+              } else {
+                drawPngOutline(Ip_gun_rack_blank, 0x0000);
+                drawPng(Ip_gun_rack_blank);
+              }
+              // Putting delay here is cursed but works
+              delay(1000);
+            }
+            // TODO: reveal bullet contents
+          }
+          break;
+        case ITEM_BEER:
+          if (item_frame == 0) {
+            drawPngOutline(Ip_beer_1, 0x0000);
+            drawPng(Ip_beer_1);
+          } else if (item_frame == 1) {
+            drawPngOutline(Ip_beer_2, 0x0000);
+            drawPng(Ip_beer_2);
+          }
+          break;
+        case ITEM_CIG:
+          if (item_frame == 0) {
+            drawPngOutline(Ip_cig_1, 0x0000);
+            drawPng(Ip_cig_1);
+          } else if (item_frame == 1) {
+            drawPngOutline(Ip_cig_2, 0x0000);
+            drawPng(Ip_cig_2);
+          } else if (item_frame == 2) {
+            drawPngOutline(Ip_cig_3, 0x0000);
+            drawPng(Ip_cig_3);
+          } else if (item_frame >= 3) {
+            drawPngOutline(Ip_cig_4, 0x0000);
+            drawPng(Ip_cig_4);
+          }
+          break;
+        case ITEM_KNIFE:
+          if (item_frame == 0) {
+            drawPngOutline(Ip_knife_1, 0x0000);
+            drawPng(Ip_knife_1);
+          } else if (item_frame == 1) {
+            drawPngOutline(Ip_knife_2, 0x0000);
+            drawPng(Ip_knife_2);
+          } else if (item_frame == 2) {
+            drawPngOutline(Ip_knife_3, 0x0000);
+            drawPng(Ip_knife_3);
+          }
+          break;
+      }
+      break;
   }
   if (who_cuffed == E_PLAYER) {
     drawPngOutline(Ip_cuff_2, 0x0000);
@@ -105,7 +176,7 @@ void drawDealer(uint16_t dealerHighlight, bool highlightOnly) {
     if (!highlightOnly)
       drawPng(Idealer_head_crushed);
   }
-  if (who_cuffed == E_DEALER) {
+  if (who_cuffed == E_DEALER && (last_item != ITEM_CUFFS || game_state != STATE_PLAYER_ITEM)) {
     drawPngOutline(Idealer_hands_cuff, dealerHighlight);
     if (!highlightOnly)
       drawPng(Idealer_hands_cuff);
@@ -122,6 +193,40 @@ void drawDealer(uint16_t dealerHighlight, bool highlightOnly) {
       case STATE_DEALER_SHOT_P:
         drawPngOutline(Id_gun_shoot_p, 0x0000);
         drawPng(Id_gun_shoot_p);
+        break;
+      case STATE_DEALER_ITEM:
+        switch (last_item) {
+          case ITEM_CUFFS:
+            drawPngOutline(Id_cuff, 0x0000);
+            drawPng(Id_cuff);
+            break;
+          case ITEM_MAG:
+            if (item_frame == 0) {
+              drawPngOutline(Id_mag_1, 0x0000);
+              drawPng(Id_mag_1);
+            } else {
+              drawPngOutline(Id_mag_2, 0x0000);
+              drawPng(Id_mag_2);
+            }
+            break;
+          case ITEM_BEER:
+            drawPngOutline(Id_beer, 0x0000);
+            drawPng(Id_beer);
+            break;
+          case ITEM_CIG:
+            if (item_frame == 0) {
+              drawPngOutline(Id_smoke_1, 0x0000);
+              drawPng(Id_smoke_1);
+            } else {
+              drawPngOutline(Id_smoke_2, 0x0000);
+              drawPng(Id_smoke_2);
+            }
+            break;
+          case ITEM_KNIFE:
+            drawPngOutline(Id_knife, 0x0000);
+            drawPng(Id_knife);
+            break;
+        }
         break;
       default:
         drawPngOutline(Idealer_hand_left, dealerHighlight);
@@ -194,16 +299,44 @@ void handleSceneSwitchGame() {
   startRound();
 }
 
+void handleDealer();
+
 void playerUseItem(char itemIndex) {
-  useItem(E_PLAYER, itemIndex);
+  game_state = STATE_PLAYER_ITEM;
+  item_frame = 0;
+  char usedItem = useItem(E_PLAYER, itemIndex);
   scene_selection = 0;
+  while (true) {
+    tft.fillScreen(0x0000);
+    drawGame();
+    delay((usedItem == ITEM_KNIFE || usedItem == ITEM_MAG || usedItem == ITEM_CIG) ? 500 : 1500);
+    item_frame++;
+    if (usedItem == ITEM_CUFFS && item_frame == 1) break;
+    if (usedItem == ITEM_NONE  && item_frame == 1) break;
+    if (usedItem == ITEM_BEER  && item_frame == 2) break;
+    if (usedItem == ITEM_KNIFE && item_frame == 3) break;
+    if (usedItem == ITEM_CIG   && item_frame == 5) break;
+    if (usedItem == ITEM_MAG   && item_frame == 5) break;
+  }
+  game_state = STATE_PLAYER_TURN;
+  tft.fillScreen(0x0000);
+  drawGame();
 }
 
 void dealerUseItem(char itemIndex) {
-  useItem(E_DEALER, itemIndex);
+  game_state = STATE_DEALER_ITEM;
+  item_frame = 0;
+  char usedItem = useItem(E_DEALER, itemIndex);
+  tft.fillScreen(0x0000);
+  drawGame();
+  delay(1500);
+  if (usedItem == ITEM_MAG || usedItem == ITEM_CIG) {
+    item_frame++;
+    drawGame();
+    delay(1500);
+  }
+  game_state = STATE_DEALER_TURN;
 }
-
-void handleDealer();
 
 void shootCallback(char shell, char whoGotShot) {
   if (shell == SHELL_LIVE) {
@@ -260,7 +393,6 @@ void handleDealer() {
     char shell = shootGun(E_DEALER, whoGotShot);
     shootCallback(shell, whoGotShot);
   } else if (dealerAction == DEALER_ACTION_USE_ITEM) {
-    game_state = STATE_DEALER_ITEM;
     dealerUseItem(desiredItemSlot);
     handleDealer();
   }

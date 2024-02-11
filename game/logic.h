@@ -26,6 +26,8 @@ int dealer_hands = HANDS_NORMAL;
 #define ITEM_KNIFE 5
 char player_items[8] = {1, 2, 3, 4, 5, 0, 0};
 char dealer_items[8] = {0, 0, 0, 0, 0, 3, 0};
+char last_item = ITEM_NONE;
+char item_frame = 0;
 
 char who_cuffed = E_NONE;
 
@@ -86,5 +88,6 @@ char useItem(char entity, char itemIndex) {
       break;
   }
   (entity == E_PLAYER ? player_items : dealer_items)[itemIndex] = ITEM_NONE;
+  last_item = used_item;
   return used_item;
 }
