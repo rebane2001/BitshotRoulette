@@ -108,6 +108,7 @@ void drawOverlay() {
 void drawTable(bool player_only) {
   if (!player_only) {
     drawPng(Itable_1);
+    
     for (char i = (shellCount + ((game_state == STATE_PLAYER_ITEM && item_frame == 0 && last_item == ITEM_BEER) ? 1 : 0)); i < 8; i++) {
       if (shells[i] == SHELL_BLANK) {
         drawPngOutline(Idrop_blank, droppedShells[i][0], droppedShells[i][1], 0x0000);
@@ -178,10 +179,14 @@ void drawTableItems(bool player_only) {
 }
 
 void drawDealer(uint16_t dealerHighlight, bool highlightOnly) {
-  if (dealer_h == HEAD_NORMAL) {
-    drawPngOutline(Idealer_head, dealerHighlight);
+  if (amongus_mode) {
+    drawPngOutline(Idealer_head_amongus, dealerHighlight);
     if (!highlightOnly)
-      drawPng(Idealer_head);
+      drawPng(Idealer_head_amongus);
+  } else if (dealer_h == HEAD_NORMAL) {
+    drawPngOutline(Idealer_head_normal, dealerHighlight);
+    if (!highlightOnly)
+      drawPng(Idealer_head_normal);
   } else if (dealer_h == HEAD_CRUSHED) {
     drawPngOutline(Idealer_head_crushed, dealerHighlight);
     if (!highlightOnly)
@@ -294,8 +299,11 @@ void drawShowShells() {
   }
 }
 
+void handleDealer();
+
 void startRound() {
   tft.fillScreen(0x0000);
+  dealer_h = HEAD_NORMAL;
   game_state = STATE_SHELL_CHECK;
   who_cuffed = E_NONE;
   handsawActive = false;
@@ -303,9 +311,10 @@ void startRound() {
   generateShells();
   drawShowShells();
   delay(2750);
-  game_state = STATE_PLAYER_TURN;
+  game_state = amongus_mode ? STATE_DEALER_TURN : STATE_PLAYER_TURN;
   tft.fillScreen(0x0000);
   drawGame();
+  handleDealer();
 }
 
 void handleSceneSwitchGame() {
@@ -313,8 +322,6 @@ void handleSceneSwitchGame() {
   resetHealth();
   startRound();
 }
-
-void handleDealer();
 
 void playerUseItem(char itemIndex) {
   game_state = STATE_PLAYER_ITEM;
@@ -377,6 +384,8 @@ void shootCallback(char shell, char whoGotShot) {
         delay(16);
       }
     } else {
+      if (game_state == STATE_DEALER_SHOT_D)
+        dealer_h = HEAD_CRUSHED;
       tft.fillScreen(VIC_BLACK);
       for (char i = 0; i < 8; i++) {
         drawDealer(vic_colors[random(16)], true);

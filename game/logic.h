@@ -30,6 +30,8 @@ char last_item = ITEM_NONE;
 char item_frame = 0;
 
 char who_cuffed = E_NONE;
+bool amongus_mode = false;
+bool trans_mode = false;
 
 bool handsawActive = false;
 
@@ -54,6 +56,7 @@ bool nextRound() {
 }
 
 char getNextTurn(char shell) {
+  if (amongus_mode) return STATE_DEALER_TURN;
   if (game_state == STATE_PLAYER_SHOT_P && shell == SHELL_BLANK) return STATE_PLAYER_TURN;
   if (game_state == STATE_DEALER_SHOT_D && shell == SHELL_BLANK) return STATE_DEALER_TURN;
   if ((game_state == STATE_PLAYER_SHOT_P || game_state == STATE_PLAYER_SHOT_D) && who_cuffed == E_DEALER) {

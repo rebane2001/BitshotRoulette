@@ -70,6 +70,6 @@ char getDealerAction() {
     }
   }
 
-  if (dealerTarget == E_NONE) dealerTarget = random(2) ? E_PLAYER : E_DEALER;
+  if (dealerTarget == E_NONE) dealerTarget = (amongus_mode || random(2)) ? E_PLAYER : E_DEALER;
   return dealerTarget == E_PLAYER ? DEALER_ACTION_SHOOT_P : DEALER_ACTION_SHOOT_D;
 }

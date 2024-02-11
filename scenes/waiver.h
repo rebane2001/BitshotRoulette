@@ -48,7 +48,7 @@ void drawKeypad() {
     tft.drawFastHLine(72, 99, 22, HIGHLIGHT_COLOR);
     tft.drawFastHLine(72, 99 + 14, 38, HIGHLIGHT_COLOR);
   }
-  tft.setTextColor(0x07e0, 0x0000);
+  tft.setTextColor(trans_mode ? 0x5e7e : 0x07e0, 0x0000);
   tft.setTextSize(2);
   tft.setTextDatum(TL_DATUM);
   tft.drawString(player_name, 32, 26);
@@ -82,6 +82,7 @@ void handleInputWaiver(char button) {
       if (player_name.length() == 0) return;
       if (player_name.equals("GOD")) return;
       if (player_name.equals("DEALER")) return;
+      amongus_mode = player_name.equals("AMONGUS");
       drawPng(Iguy_1);
       drawPng(Iliability);
       tft.setTextColor(0x0000, 0x86BB);
@@ -98,9 +99,10 @@ void handleInputWaiver(char button) {
         waiver_letter--;
       }
       player_name.concat(waiver_letter);
-      if (player_name.length() == 7 && !player_name.equals("AMONGUS")) {
+      if (player_name.length() == 7 && !player_name.equals("AMONGUS"))
         player_name.remove(6);
-      }
+      if (player_name.equals("TRANS"))
+        trans_mode = true;
       drawKeypad();
     }
   } else {

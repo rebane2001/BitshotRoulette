@@ -23,7 +23,7 @@ void drawMainMenu() {
   tft.drawString(F("BITSHOT"), TFT_WC, BASE_HEIGHT);
   tft.drawString(F("ROULETTE"), TFT_WC, BASE_HEIGHT + LINE_HEIGHT*2);
   tft.setTextSize(1);
-  tft.drawString(F("AN ESP32 GAME"), TFT_WC, BASE_HEIGHT + LINE_HEIGHT*4);
+  tft.drawString(F("AN ESP32 PORT"), TFT_WC, BASE_HEIGHT + LINE_HEIGHT*4);
   tft.drawString(F("BY LYRA REBANE"), TFT_WC, BASE_HEIGHT + LINE_HEIGHT*5);
 
   drawMainMenuOptions();
@@ -47,6 +47,8 @@ void handleInputMainMenu(char button) {
         break;
       case 2:
         tft.fillScreen(0x0000);
+        if (TFT_BL)
+          digitalWrite(TFT_BL, LOW);
         break;
     }
   } else {

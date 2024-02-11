@@ -1,5 +1,4 @@
 long long game_score = 0;
-
 int stat_shots_fired = 0;
 int stat_shells_ejected = 0;
 int stat_cigarettes_smoked = 0;
