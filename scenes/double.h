@@ -1,4 +1,5 @@
 bool doubleFirstDraw = false;
+bool doubleNoInput = false;
 
 void drawDouble() {
   tft.fillScreen(0x0000);
@@ -23,12 +24,31 @@ void drawDouble() {
   doubleFirstDraw = false;
 }
 
+void drawWinText() {
+  tft.setTextColor(0xFFFF, 0x0000);
+  tft.setTextSize(1);
+  tft.setTextDatum(TC_DATUM);
+  tft.drawString("CONGRATULATIONS,", TFT_WIDTH / 2, 16 + 9*0);
+  tft.drawString(player_name + "!", TFT_WIDTH / 2, 16 + 9*1);
+  tft.drawString("rounds beat: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*3);
+  tft.drawString("shots fired: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*4);
+  tft.drawString("shells ejected: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*5);
+  tft.drawString("cigarettes smoked: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*6);
+  tft.drawString("ml of beer drank: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*7);
+  tft.drawString("total cash: " + String(stat_shots_fired), TFT_WIDTH / 2, 16 + 9*8);
+  tft.setTextSize(2);
+  tft.drawString(String(game_score) + "$", TFT_WIDTH / 2, 16 + 9*9 + 3);
+}
+
 void handleSceneSwitchDouble() {
+  stat_endless_rounds++;
+  increaseScore();
   doubleFirstDraw = true;
   drawDouble();
 }
 
 void handleInputDouble(char button) {
+  if (doubleNoInput) return;
   if (scene_selection > 1) {
     scene_selection = 0;
   }
@@ -36,6 +56,11 @@ void handleInputDouble(char button) {
     switch (scene_selection) {
       case 0:
         switchScene(SCENE_GAME);
+        break;
+      case 1:
+        doubleNoInput = true;
+        drawPng(Iending_win);
+        drawWinText();
         break;
     }
   } else {

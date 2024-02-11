@@ -35,6 +35,7 @@ void switchScene(char scene_id);
 #include "game/define.h"
 #include "game/shell.h"
 #include "game/health.h"
+#include "game/stats.h"
 #include "game/logic.h"
 #include "game/dealer.h"
 #include "scenes/mainmenu.h"
@@ -43,6 +44,8 @@ void switchScene(char scene_id);
 #include "scenes/backroom.h"
 #include "scenes/waiver.h"
 #include "scenes/game.h"
+#include "scenes/double.h"
+#include "scenes/dead.h"
 
 void switchScene(char scene_id) {
   scene = scene_id;

@@ -33,12 +33,12 @@ char who_cuffed = E_NONE;
 
 bool handsawActive = false;
 
-long long game_score = 0;
-
 char shootGun(char whoShot, char whoGotShot) {
   char shell = popShell();
-  if (shell == SHELL_LIVE)
+  if (shell == SHELL_LIVE) {
     changeHealth(whoGotShot, handsawActive ? -2 : -1);
+    stat_shots_fired++;
+  }
   handsawActive = false;
   return shell;
 }
@@ -106,19 +106,24 @@ void giveItems() {
 }
 
 char useItem(char entity, char itemIndex) {
-  // TODO: check if item use is allowed
   char used_item = (entity == E_PLAYER ? player_items : dealer_items)[itemIndex];
   switch (used_item) {
     case ITEM_MAG:
       knowShell = peekShell();
       break;
     case ITEM_CIG:
+      if (entity == E_PLAYER)
+        stat_cigarettes_smoked++;
       changeHealth(entity, 1);
       break;
     case ITEM_BEER:
+      if (entity == E_PLAYER)
+        stat_ml_of_beer_drank += 330;
+      stat_shells_ejected++;
       popShell();
       break;
     case ITEM_CUFFS:
+      // TODO: disallow multiple cuffs in a row
       if (who_cuffed != E_NONE) return ITEM_NONE;
       who_cuffed = entity == E_PLAYER ? E_DEALER : E_PLAYER;
       break;
