@@ -1,26 +1,3 @@
-#define STATE_SHELL_CHECK   0
-#define STATE_PLAYER_TURN   1
-#define STATE_PLAYER_SHOOT  2
-#define STATE_PLAYER_SHOT_D 3
-#define STATE_PLAYER_SHOT_P 4
-int game_state = STATE_SHELL_CHECK;
-
-#define HEAD_NORMAL  0
-#define HEAD_CRUSHED 1
-int dealer_h = HEAD_NORMAL;
-
-#define HANDS_NORMAL 0
-int dealer_hands = HANDS_NORMAL;
-
-#define ITEM_NONE  0
-#define ITEM_CUFFS 1
-#define ITEM_MAG   2
-#define ITEM_BEER  3
-#define ITEM_CIG   4
-#define ITEM_KNIFE 5
-char player_items[8] = {1, 2, 3, 4, 5, 0, 0};
-char dealer_items[8] = {0, 0, 0, 0, 0, 3, 0};
-
 void drawGunChoice() {
   bool dealerChosen = scene_selection == 0;
   uint16_t textBg = 0x89e7;
@@ -50,6 +27,10 @@ void drawOverlay() {
       drawPng(Ip_gun_shoot_p);
       break;
   }
+  if (who_cuffed == E_PLAYER) {
+    drawPngOutline(Ip_cuff_2, 0x0000);
+    drawPng(Ip_cuff_2);
+  }
 }
 
 void drawTable(bool player_only) {
@@ -58,7 +39,8 @@ void drawTable(bool player_only) {
   drawPng(Itable_2);
   switch (game_state) {
     case STATE_PLAYER_TURN:
-      drawPngOutline(Ip_gun_table, 6, 9, scene_selection == 0 ? HIGHLIGHT_COLOR : 0x0000);
+    case STATE_DEALER_TURN:
+      drawPngOutline(Ip_gun_table, 6, 9, (scene_selection == 0 && game_state == STATE_PLAYER_TURN) ? HIGHLIGHT_COLOR : 0x0000);
       drawPng(Ip_gun_table, 6, 9);
       if (scene_selection > 0) {
         // TODO: draw item description
@@ -123,15 +105,33 @@ void drawDealer(uint16_t dealerHighlight, bool highlightOnly) {
     if (!highlightOnly)
       drawPng(Idealer_head_crushed);
   }
-  switch (dealer_hands) {
-    case HANDS_NORMAL:
-      drawPngOutline(Idealer_hand_left, dealerHighlight);
-      drawPngOutline(Idealer_hand_right, dealerHighlight);
-      if (!highlightOnly) {
-        drawPng(Idealer_hand_left);
-        drawPng(Idealer_hand_right);
-      }
-      break;
+  if (who_cuffed == E_DEALER) {
+    drawPngOutline(Idealer_hands_cuff, dealerHighlight);
+    if (!highlightOnly)
+      drawPng(Idealer_hands_cuff);
+  } else {
+    switch (game_state) {
+      case STATE_DEALER_SHOOT:
+        drawPngOutline(Id_gun, 0x0000);
+        drawPng(Id_gun);
+        break;
+      case STATE_DEALER_SHOT_D:
+        drawPngOutline(Id_gun_shoot_d, 0x0000);
+        drawPng(Id_gun_shoot_d);
+        break;
+      case STATE_DEALER_SHOT_P:
+        drawPngOutline(Id_gun_shoot_p, 0x0000);
+        drawPng(Id_gun_shoot_p);
+        break;
+      default:
+        drawPngOutline(Idealer_hand_left, dealerHighlight);
+        drawPngOutline(Idealer_hand_right, dealerHighlight);
+        if (!highlightOnly) {
+          drawPng(Idealer_hand_left);
+          drawPng(Idealer_hand_right);
+        }
+        break;
+    }
   }
 }
 
@@ -202,12 +202,14 @@ void useItem() {
   drawGame();
 }
 
+void handleDealer();
+
 void shootCallback(char shell, char whoGotShot) {
   if (shell == SHELL_LIVE) {
-    if (scene_selection) {
-      for (char i = 0; i < 16; i++) {
+    if (whoGotShot == E_PLAYER) {
+      for (char i = 0; i < 32; i++) {
         tft.fillScreen(vic_colors[random(0,16)]);
-        delay(20);
+        delay(16);
       }
     } else {
       tft.fillScreen(VIC_BLACK);
@@ -216,26 +218,45 @@ void shootCallback(char shell, char whoGotShot) {
       }
     }
   } else {
-    game_state = STATE_PLAYER_SHOOT;
-    tft.fillScreen(0x0000);
-    drawGame();
-    delay(300);
+    delay(1000);
   }
 
   char dead = whoIsDead();
   if (dead != E_NONE) {
     tft.fillScreen(dead == E_PLAYER ? 0xE000 : 0x0EE0);
   } else if (nextRound()) {
+    tft.fillScreen(0x0000);
     drawGame();
     delay(300);
     startRound();
   } else {
-    game_state = STATE_PLAYER_TURN;
+    game_state = getNextTurn(shell);
     tft.fillScreen(0x0000);
     drawGame();
+    handleDealer();
   }
   // TODO: do this part
   // if (dead == E_NONE) {}
+}
+
+void handleDealer() {
+  if (game_state != STATE_DEALER_TURN) return;
+  drawGame();
+  delay(1750);
+  char dealerAction = getDealerAction();
+  if (dealerAction == DEALER_ACTION_SHOOT_P || dealerAction == DEALER_ACTION_SHOOT_D) {
+    game_state = STATE_DEALER_SHOOT;
+    tft.fillScreen(0x0000);
+    drawGame();
+    delay(1000);
+    char whoGotShot = dealerAction == DEALER_ACTION_SHOOT_P ? E_PLAYER : E_DEALER;
+    game_state = whoGotShot == E_PLAYER ? STATE_DEALER_SHOT_P : STATE_DEALER_SHOT_D;
+    tft.fillScreen(0x0000);
+    drawGame();
+    delay(1750);
+    char shell = shootGun(E_DEALER, whoGotShot);
+    shootCallback(shell, whoGotShot);
+  }
 }
 
 void handleInputGame(char button) {
@@ -269,7 +290,7 @@ void handleInputGame(char button) {
       scene_selection = 0;
       game_state = whoGotShot == E_PLAYER ? STATE_PLAYER_SHOT_P : STATE_PLAYER_SHOT_D;
       drawGame();
-      delay(500);
+      delay(1750);
       char shell = shootGun(E_PLAYER, whoGotShot);
       shootCallback(shell, whoGotShot);
     }
