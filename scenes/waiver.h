@@ -1,4 +1,4 @@
-const byte buttonBounds[][4] = {
+const char buttonBounds[][4] = {
   { 28, 53, 14, 14 },
   { 51, 53, 14, 14 },
   { 71, 54, 39, 14 },

@@ -1,3 +1,5 @@
+const char droppedShells[][2] = { { 104, 200 }, { 106, 173 }, { 31, 175 }, { 75, 18 }, { 15, 196 }, { 96, 156 }, { 11, 159 }, { 59, 158 } };
+
 void drawGunChoice() {
   bool dealerChosen = scene_selection == 0;
   uint16_t textBg = 0x89e7;
@@ -105,8 +107,18 @@ void drawOverlay() {
 }
 
 void drawTable(bool player_only) {
-  if (!player_only)
+  if (!player_only) {
     drawPng(Itable_1);
+    for (char i = (shellCount + ((game_state == STATE_PLAYER_ITEM && item_frame == 0 && last_item == ITEM_BEER) ? 1 : 0)); i < 8; i++) {
+      if (shells[i] == SHELL_BLANK) {
+        drawPngOutline(Idrop_blank, droppedShells[i][0], droppedShells[i][1], 0x0000);
+        drawPng(Idrop_blank, droppedShells[i][0], droppedShells[i][1]);
+      } else if (shells[i] == SHELL_LIVE) {
+        drawPngOutline(Idrop_live, droppedShells[i][0], droppedShells[i][1], 0x0000);
+        drawPng(Idrop_live, droppedShells[i][0], droppedShells[i][1]);
+      }
+    }
+  }
   drawPng(Itable_2);
   switch (game_state) {
     case STATE_PLAYER_TURN:
@@ -286,6 +298,8 @@ void drawShowShells() {
 void startRound() {
   tft.fillScreen(0x0000);
   game_state = STATE_SHELL_CHECK;
+  who_cuffed = E_NONE;
+  handsawActive = false;
   generateShells();
   drawShowShells();
   delay(2750);

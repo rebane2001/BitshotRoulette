@@ -17,6 +17,8 @@ void resetDealerTurn() {
   desiredItemSlot = 0;
 }
 
+// The dealer logic is recreated
+// 1:1 from the original
 char getDealerAction() {
   char desiredItem = ITEM_NONE;
   if (shellCount == 1)
@@ -36,6 +38,7 @@ char getDealerAction() {
       case ITEM_BEER:
         if (knowShell != SHELL_LIVE && shellCount > 1) {
           desiredItem = ITEM_BEER;
+          // fix not present in original game
           knowShell = SHELL_NONE;
         }
         break;
