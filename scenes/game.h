@@ -1,6 +1,8 @@
-#define STATE_SHELL_CHECK  0
-#define STATE_PLAYER_TURN  1
-#define STATE_PLAYER_SHOOT 2
+#define STATE_SHELL_CHECK   0
+#define STATE_PLAYER_TURN   1
+#define STATE_PLAYER_SHOOT  2
+#define STATE_PLAYER_SHOT_D 3
+#define STATE_PLAYER_SHOT_P 4
 int game_state = STATE_SHELL_CHECK;
 
 #define HEAD_NORMAL  0
@@ -34,6 +36,22 @@ void drawGunChoice() {
   drawPng(Ip_gun_inspect);
 }
 
+void drawOverlay() {
+  switch (game_state) {
+    case STATE_PLAYER_SHOOT:
+      drawGunChoice();
+      break;
+    case STATE_PLAYER_SHOT_D:
+      drawPngOutline(Ip_gun_shoot_d, 0x0000);
+      drawPng(Ip_gun_shoot_d);
+      break;
+    case STATE_PLAYER_SHOT_P:
+      drawPngOutline(Ip_gun_shoot_p, 0x0000);
+      drawPng(Ip_gun_shoot_p);
+      break;
+  }
+}
+
 void drawTable(bool player_only) {
   if (!player_only)
     drawPng(Itable_1);
@@ -46,9 +64,6 @@ void drawTable(bool player_only) {
         // TODO: draw item description
         tft.drawRect(scene_selection*16 - 15 + (scene_selection > 4 ? 6 : 0), 224, 15, 15, HIGHLIGHT_COLOR);
       }
-      break;
-    case STATE_PLAYER_SHOOT:
-      drawGunChoice();
       break;
   }
 }
@@ -98,20 +113,24 @@ void drawTableItems(bool player_only) {
   }
 }
 
-void drawDealer(uint16_t dealerHighlight) {
+void drawDealer(uint16_t dealerHighlight, bool highlightOnly) {
   if (dealer_h == HEAD_NORMAL) {
     drawPngOutline(Idealer_head, dealerHighlight);
-    drawPng(Idealer_head);
+    if (!highlightOnly)
+      drawPng(Idealer_head);
   } else if (dealer_h == HEAD_CRUSHED) {
     drawPngOutline(Idealer_head_crushed, dealerHighlight);
-    drawPng(Idealer_head_crushed);
+    if (!highlightOnly)
+      drawPng(Idealer_head_crushed);
   }
   switch (dealer_hands) {
     case HANDS_NORMAL:
       drawPngOutline(Idealer_hand_left, dealerHighlight);
       drawPngOutline(Idealer_hand_right, dealerHighlight);
-      drawPng(Idealer_hand_left);
-      drawPng(Idealer_hand_right);
+      if (!highlightOnly) {
+        drawPng(Idealer_hand_left);
+        drawPng(Idealer_hand_right);
+      }
       break;
   }
 }
@@ -121,15 +140,22 @@ void drawScores() {
   tft.setTextSize(1);
   tft.setTextDatum(TL_DATUM);
   tft.drawString(F("DEALER"), 1, 1);
+  String health = "*****";
+  health.remove(dealerHealth);
+  tft.drawString(health, 1, 10);
   tft.setTextDatum(TR_DATUM);
   tft.drawString(player_name, TFT_WIDTH - 1, 1);
+  health = "*****";
+  health.remove(playerHealth);
+  tft.drawString(health, TFT_WIDTH - 1, 10);
 }
 
 void drawGame() {
   drawTable(false);
   drawTableItems(false);
-  drawDealer((game_state == STATE_PLAYER_SHOOT && scene_selection == 0) ? HIGHLIGHT_COLOR : 0x0000);
+  drawDealer((game_state == STATE_PLAYER_SHOOT && scene_selection == 0) ? HIGHLIGHT_COLOR : 0x0000, false);
   drawScores();
+  drawOverlay();
 }
 
 void drawShowShells() {
@@ -157,7 +183,7 @@ void startRound() {
   game_state = STATE_SHELL_CHECK;
   generateShells();
   drawShowShells();
-  delay(3500);
+  delay(2750);
   game_state = STATE_PLAYER_TURN;
   tft.fillScreen(0x0000);
   drawGame();
@@ -174,6 +200,42 @@ void useItem() {
   player_items[scene_selection - 1] = ITEM_NONE;
   scene_selection = 0;
   drawGame();
+}
+
+void shootCallback(char shell, char whoGotShot) {
+  if (shell == SHELL_LIVE) {
+    if (scene_selection) {
+      for (char i = 0; i < 16; i++) {
+        tft.fillScreen(vic_colors[random(0,16)]);
+        delay(20);
+      }
+    } else {
+      tft.fillScreen(VIC_BLACK);
+      for (char i = 0; i < 8; i++) {
+        drawDealer(vic_colors[random(0,16)], true);
+      }
+    }
+  } else {
+    game_state = STATE_PLAYER_SHOOT;
+    tft.fillScreen(0x0000);
+    drawGame();
+    delay(300);
+  }
+
+  char dead = whoIsDead();
+  if (dead != E_NONE) {
+    tft.fillScreen(dead == E_PLAYER ? 0xE000 : 0x0EE0);
+  } else if (nextRound()) {
+    drawGame();
+    delay(300);
+    startRound();
+  } else {
+    game_state = STATE_PLAYER_TURN;
+    tft.fillScreen(0x0000);
+    drawGame();
+  }
+  // TODO: do this part
+  // if (dead == E_NONE) {}
 }
 
 void handleInputGame(char button) {
@@ -202,11 +264,20 @@ void handleInputGame(char button) {
       } else {
         useItem();
       }
+    } else if (game_state == STATE_PLAYER_SHOOT) {
+      char whoGotShot = scene_selection ? E_PLAYER : E_DEALER;
+      scene_selection = 0;
+      game_state = whoGotShot == E_PLAYER ? STATE_PLAYER_SHOT_P : STATE_PLAYER_SHOT_D;
+      drawGame();
+      delay(500);
+      char shell = shootGun(E_PLAYER, whoGotShot);
+      shootCallback(shell, whoGotShot);
     }
   } else if (button == 0) {
     if (game_state == STATE_PLAYER_TURN) {
       drawTable(true);
       drawTableItems(true);
+      drawOverlay();
     } else {
       drawGame();
     }

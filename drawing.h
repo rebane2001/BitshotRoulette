@@ -6,6 +6,25 @@ int16_t xpos = 0;
 int16_t ypos = 0;
 uint16_t outlineC = 1;
 
+#define VIC_BLACK        0x0000
+#define VIC_WHITE        0xFFFF
+#define VIC_BROWN_DARK   0xA389
+#define VIC_BROWN_LIGHT  0xE590
+#define VIC_RED_DARK     0x7165
+#define VIC_RED_LIGHT    0xB34C
+#define VIC_SKY_DARK     0x869B
+#define VIC_SKY_LIGHT    0xC7FF
+#define VIC_PINK_DARK    0xA2F6
+#define VIC_PINK_LIGHT   0xE4FE
+#define VIC_GREEN_DARK   0x54E9
+#define VIC_GREEN_LIGHT  0x96F0
+#define VIC_BLUE_DARK    0x41B1
+#define VIC_BLUE_LIGHT   0x7B99
+#define VIC_YELLOW_DARK  0xBE4E
+#define VIC_YELLOW_LIGHT 0xFFF5
+
+uint16_t vic_colors[] = { VIC_BLACK, VIC_WHITE, VIC_BROWN_DARK, VIC_BROWN_LIGHT, VIC_RED_DARK, VIC_RED_LIGHT, VIC_SKY_DARK, VIC_SKY_LIGHT, VIC_PINK_DARK, VIC_PINK_LIGHT, VIC_GREEN_DARK, VIC_GREEN_LIGHT, VIC_BLUE_DARK, VIC_BLUE_LIGHT, VIC_YELLOW_DARK, VIC_YELLOW_LIGHT };
+
 #define HIGHLIGHT_COLOR 0xFFE0
 
 // https://github.com/Bodmer/TFT_eSPI/blob/master/examples/PNG%20Images/Flash_transparent_PNG/png_support.ino
