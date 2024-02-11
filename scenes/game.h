@@ -194,12 +194,13 @@ void handleSceneSwitchGame() {
   startRound();
 }
 
-void useItem() {
-  // TODO: check if item use is allowed
-  char used_item = player_items[scene_selection - 1];
-  player_items[scene_selection - 1] = ITEM_NONE;
+void playerUseItem(char itemIndex) {
+  useItem(E_PLAYER, itemIndex);
   scene_selection = 0;
-  drawGame();
+}
+
+void dealerUseItem(char itemIndex) {
+  useItem(E_DEALER, itemIndex);
 }
 
 void handleDealer();
@@ -258,6 +259,10 @@ void handleDealer() {
     delay(1750);
     char shell = shootGun(E_DEALER, whoGotShot);
     shootCallback(shell, whoGotShot);
+  } else if (dealerAction == DEALER_ACTION_USE_ITEM) {
+    game_state = STATE_DEALER_ITEM;
+    dealerUseItem(desiredItemSlot);
+    handleDealer();
   }
 }
 
@@ -285,7 +290,7 @@ void handleInputGame(char button) {
         delay(100);
         drawGame();
       } else {
-        useItem();
+        playerUseItem(scene_selection - 1);
       }
     } else if (game_state == STATE_PLAYER_SHOOT) {
       char whoGotShot = scene_selection ? E_PLAYER : E_DEALER;
@@ -306,4 +311,3 @@ void handleInputGame(char button) {
     }
   }
 }
-

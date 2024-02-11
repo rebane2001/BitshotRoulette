@@ -30,6 +30,7 @@ unsigned long randomSeedCounter = 0;
 
 void switchScene(char scene_id);
 
+#include "game/define.h"
 #include "game/shell.h"
 #include "game/health.h"
 #include "game/logic.h"
