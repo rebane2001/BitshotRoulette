@@ -26,8 +26,11 @@ bool btn_left_long = false;
 int scene = SCENE_MAIN_MENU;
 int scene_selection = 0;
 
+unsigned long randomSeedCounter = 0;
+
 void switchScene(char scene_id);
 
+#include "game/shell.h"
 #include "scenes/mainmenu.h"
 #include "scenes/credits.h"
 #include "scenes/bathroom.h"
@@ -105,7 +108,7 @@ void setupTft() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.print(F("Bitshot Roulette"));
+  Serial.println(F("[Bitshot Roulette]"));
   setupTft();
   setupButtons();
   drawMainMenu();
@@ -132,6 +135,9 @@ void buttonLoop() {
 
 void loop(void) {
   buttonLoop();
+  if (scene == SCENE_MAIN_MENU || scene == SCENE_BATHROOM) {
+    randomSeedCounter++;
+  }
   if (btn_left_long && scene == SCENE_WAIVER) {
     waiverHold();
   }

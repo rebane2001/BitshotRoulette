@@ -32,6 +32,7 @@ void handleInputBathroom(char button) {
   if (button == 1) {
     switch (scene_selection) {
       case 0:
+        randomSeed(randomSeedCounter);
         switchScene(SCENE_BACKROOM);
         break;
       case 1:

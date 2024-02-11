@@ -1,6 +1,7 @@
-#define STATE_PLAYER_TURN  0
-#define STATE_PLAYER_SHOOT 1
-int game_state = STATE_PLAYER_TURN;
+#define STATE_SHELL_CHECK  0
+#define STATE_PLAYER_TURN  1
+#define STATE_PLAYER_SHOOT 2
+int game_state = STATE_SHELL_CHECK;
 
 #define HEAD_NORMAL  0
 #define HEAD_CRUSHED 1
@@ -131,9 +132,40 @@ void drawGame() {
   drawScores();
 }
 
-void handleSceneSwitchGame() {
+void drawShowShells() {
+  drawPng(Ishow_shells);
+  delay(1000);
+  char liveShellsRemaining = liveShellCount;
+  char blankShellsRemaining = blankShellCount;
+  short showShellX = i > 3 ? 1 : 0;
+  short showShellY = 188 - i*22; 
+  for (char i = 0; i < 8; i++) {
+    if (i > shellCount - 1) {
+      drawPng(Ishow_none, showShellX, showShellY);
+    } else if (liveShellsRemaining && (!blankShellsRemaining || random(2) == 1)) {
+      drawPng(Ishow_live, showShellX, showShellY);
+      liveShellsRemaining--;
+    } else {
+      drawPng(Ishow_blank, showShellX, showShellY);
+      blankShellsRemaining--;
+    }
+  }
+}
+
+void startRound() {
+  tft.fillScreen(0x0000);
+  game_state = STATE_SHELL_CHECK;
+  generateShells();
+  drawShowShells();
+  delay(3500);
+  game_state = STATE_PLAYER_TURN;
   tft.fillScreen(0x0000);
   drawGame();
+}
+
+void handleSceneSwitchGame() {
+  tft.fillScreen(0x0000);
+  startRound();
 }
 
 void useItem() {
