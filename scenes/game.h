@@ -1,4 +1,4 @@
-const char droppedShells[][2] = { { 104, 200 }, { 106, 173 }, { 31, 175 }, { 75, 18 }, { 15, 196 }, { 96, 156 }, { 11, 159 }, { 59, 158 } };
+const char droppedShells[][2] = { { 104, 200 }, { 106, 173 }, { 31, 175 }, { 75, 181 }, { 15, 196 }, { 96, 156 }, { 11, 159 }, { 59, 158 } };
 
 void drawGunChoice() {
   bool dealerChosen = scene_selection == 0;
@@ -58,7 +58,6 @@ void drawOverlay() {
               // Putting delay here is cursed but works
               delay(1000);
             }
-            // TODO: reveal bullet contents
           }
           break;
         case ITEM_BEER:
@@ -100,7 +99,7 @@ void drawOverlay() {
       }
       break;
   }
-  if (who_cuffed == E_PLAYER) {
+  if (who_cuffed == E_PLAYER && (last_item != ITEM_CUFFS || game_state != STATE_DEALER_ITEM)) {
     drawPngOutline(Ip_cuff_2, 0x0000);
     drawPng(Ip_cuff_2);
   }
@@ -300,6 +299,7 @@ void startRound() {
   game_state = STATE_SHELL_CHECK;
   who_cuffed = E_NONE;
   handsawActive = false;
+  giveItems();
   generateShells();
   drawShowShells();
   delay(2750);
@@ -334,7 +334,13 @@ void playerUseItem(char itemIndex) {
   }
   game_state = STATE_PLAYER_TURN;
   tft.fillScreen(0x0000);
-  drawGame();
+  if (nextRound()) {
+    drawGame();
+    delay(300);
+    startRound();
+  } else {
+    drawGame();
+  }
 }
 
 void dealerUseItem(char itemIndex) {
@@ -344,12 +350,22 @@ void dealerUseItem(char itemIndex) {
   tft.fillScreen(0x0000);
   drawGame();
   delay(1500);
+  tft.fillScreen(0x0000);
   if (usedItem == ITEM_MAG || usedItem == ITEM_CIG) {
     item_frame++;
     drawGame();
     delay(1500);
   }
   game_state = STATE_DEALER_TURN;
+  tft.fillScreen(0x0000);
+  if (nextRound()) {
+    game_state = STATE_PLAYER_TURN;
+    drawGame();
+    delay(300);
+    startRound();
+  } else {
+    drawGame();
+  }
 }
 
 void shootCallback(char shell, char whoGotShot) {

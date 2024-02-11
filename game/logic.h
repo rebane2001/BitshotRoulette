@@ -24,8 +24,8 @@ int dealer_hands = HANDS_NORMAL;
 #define ITEM_BEER  3
 #define ITEM_CIG   4
 #define ITEM_KNIFE 5
-char player_items[8] = {1, 2, 3, 4, 5, 0, 0};
-char dealer_items[8] = {0, 0, 0, 0, 0, 3, 0};
+char player_items[8] = {0, 0, 0, 0, 0, 0, 0};
+char dealer_items[8] = {0, 0, 0, 0, 0, 0, 0};
 char last_item = ITEM_NONE;
 char item_frame = 0;
 
@@ -65,6 +65,37 @@ char getNextTurn(char shell) {
   return (game_state == STATE_PLAYER_SHOT_P || game_state == STATE_PLAYER_SHOT_D) ? STATE_DEALER_TURN : STATE_PLAYER_TURN;
 }
 
+void giveItems() {
+  char itemCount = random(1,5);
+  char playerCigs = 0;
+  char dealerCigs = 0;
+  for (char i = 0; i < 8; i++) {
+    if (player_items[i] == ITEM_CIG) playerCigs++;
+    if (dealer_items[i] == ITEM_CIG) dealerCigs++;
+  }
+  char allItems[] = { ITEM_CUFFS, ITEM_MAG, ITEM_BEER, ITEM_KNIFE, ITEM_CIG };
+  for (char j = 0; j < itemCount; j++) {
+    char newItem = allItems[random(playerCigs >= 2 ? 4 : 5)];
+    char offset = random(8);
+    for (char i = 0; i < 8; i++) {
+      if (player_items[(i + offset) % 8] == ITEM_NONE) {
+        player_items[(i + offset) % 8] = newItem;
+        break;
+      }
+    }
+  }
+  for (char j = 0; j < itemCount; j++) {
+    char newItem = allItems[random(dealerCigs >= 2 ? 4 : 5)];
+    char offset = random(8);
+    for (char i = 0; i < 8; i++) {
+      if (dealer_items[(i + offset) % 8] == ITEM_NONE) {
+        dealer_items[(i + offset) % 8] = newItem;
+        break;
+      }
+    }
+  }
+}
+
 char useItem(char entity, char itemIndex) {
   // TODO: check if item use is allowed
   char used_item = (entity == E_PLAYER ? player_items : dealer_items)[itemIndex];
@@ -77,7 +108,6 @@ char useItem(char entity, char itemIndex) {
       break;
     case ITEM_BEER:
       popShell();
-      // TODO: check for whether round is over now
       break;
     case ITEM_CUFFS:
       if (who_cuffed != E_NONE) return ITEM_NONE;
