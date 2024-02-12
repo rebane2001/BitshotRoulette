@@ -1,6 +1,6 @@
-# Bitshow Roulette
+# Bitshot Roulette
 
-A fanmade demake of Buckshot Roulette for the ESP32 (TTGO T-Display). Please check out and purchase the original [here](https://mikeklubnika.itch.io/buckshot-roulette).
+A fanmade demake of Buckshot Roulette for the ESP32 (TTGO T-Display) microcontroller. Please check out and purchase the original [here](https://mikeklubnika.itch.io/buckshot-roulette).
 
 ## Video
 
